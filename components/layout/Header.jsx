@@ -35,11 +35,12 @@ const NAV = [
           ],
         },
         {
-          heading: 'Engagements',
+          heading: 'Communication',
           links: [
-            { label: 'Engagements RSE', href: '/club#engagements' },
-            { label: 'Carrières', href: '/club#carrieres' },
             { label: 'Presse', href: '/presse' },
+            { label: 'Galerie', href: '/galerie' },
+            { label: 'Vidéos', href: '/videos' },
+            { label: 'Contact', href: '/contact' },
           ],
         },
         {
@@ -61,7 +62,6 @@ const NAV = [
           heading: 'Équipe pro',
           links: [
             { label: 'Joueurs & staff', href: '/equipe' },
-            { label: 'Statistiques', href: '/equipe/stats' },
             { label: 'Centre de formation', href: '/club/academie' },
           ],
         },
@@ -69,7 +69,7 @@ const NAV = [
           heading: 'Académie',
           links: [
             { label: 'Le parcours', href: '/club/academie' },
-            { label: 'U17 / U19', href: '/club/academie#jeunes' },
+            { label: 'Nouste Camp', href: '/club/nouste-camp' },
           ],
         },
         {
@@ -91,7 +91,6 @@ const NAV = [
           heading: 'Saison',
           links: [
             { label: 'Calendrier & résultats', href: '/calendrier' },
-            { label: 'Classement Ligue 2', href: '/calendrier#classement' },
           ],
         },
         {
@@ -100,7 +99,6 @@ const NAV = [
             { label: 'Billetterie matchs', href: '/billetterie' },
             { label: 'Abonnements', href: '/billetterie/abonnements' },
             { label: 'Cashless', href: '/billetterie/cashless' },
-            { label: 'Hospitalités', href: '/partenaires#hospitalites' },
           ],
         },
         {
@@ -158,7 +156,6 @@ const NAV = [
           links: [
             { label: 'Nos partenaires', href: '/partenaires' },
             { label: 'Devenir partenaire', href: '/contact?sujet=partenariat' },
-            { label: 'Hospitalités', href: '/partenaires#hospitalites' },
           ],
         },
         {
