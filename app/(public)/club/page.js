@@ -31,9 +31,9 @@ const VALEURS = [
 ];
 
 const STAFF_PLACEHOLDER = [
-  { nom: 'Prénom Nom', role: 'Entraîneur principal' },
-  { nom: 'Prénom Nom', role: 'Entraîneur adjoint' },
-  { nom: 'Prénom Nom', role: 'Préparateur physique' },
+  { nom: 'Bernard Laporte-Fray', role: 'Président', photo: '/images/staff/bernard-laporte-fray.png' },
+  { nom: 'Luis De Sousa', role: 'Directeur Sportif', photo: '/images/staff/luis-de-sousa.png' },
+  { nom: 'Thierry Debès', role: 'Entraîneur Principal', photo: '/images/staff/thierry-debes.png' },
 ];
 
 export default function ClubPage() {
@@ -45,7 +45,7 @@ export default function ClubPage() {
           alt=""
           fill
           priority
-          className="object-cover"
+          className="object-cover object-[center_30%]"
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-pau-night/55" aria-hidden="true" />
@@ -90,7 +90,13 @@ export default function ClubPage() {
               </Link>
             </div>
             <div className="relative aspect-[4/3] overflow-hidden bg-pau-primary">
-              <div className="absolute inset-0 bg-pau-primary" aria-hidden="true" />
+              <Image
+                src="/images/hero-histoire.jpg"
+                alt="Histoire du Pau Football Club"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-[center_30%]"
+              />
             </div>
           </div>
         </div>
@@ -130,9 +136,17 @@ export default function ClubPage() {
             STAFF SPORTIF
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8 mb-8">
-            {STAFF_PLACEHOLDER.map(({ nom, role }) => (
-              <div key={role} className="flex flex-col">
-                <div className="aspect-[3/4] bg-pau-primary mb-4" aria-hidden="true" />
+            {STAFF_PLACEHOLDER.map(({ nom, role, photo }) => (
+              <div key={role} className="flex flex-col group">
+                <div className="relative aspect-[3/4] overflow-hidden bg-pau-primary mb-4">
+                  <Image
+                    src={photo}
+                    alt={`${nom}, ${role}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover object-[center_25%] transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                </div>
                 <p className="font-sans font-semibold text-sm uppercase tracking-wider text-pau-night">
                   {nom}
                 </p>

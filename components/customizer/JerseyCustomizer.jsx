@@ -2,23 +2,12 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import dynamic from 'next/dynamic';
 import CustomizationForm from './CustomizationForm';
+import JerseyPreview2D from './JerseyPreview2D';
 import useCart from '@/lib/cart';
 
 // Maillot domicile — prix de référence en centimes
 const JERSEY_PRICE_CENTS = 8900;
-
-const JerseyScene3D = dynamic(() => import('./JerseyScene3D'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full aspect-square bg-pau-primary border border-white/10 flex items-center justify-center">
-      <p className="text-[10px] font-sans uppercase tracking-widest text-white/30">
-        CHARGEMENT...
-      </p>
-    </div>
-  ),
-});
 
 export default function JerseyCustomizer() {
   const [kit, setKit] = useState('home');
@@ -74,7 +63,7 @@ export default function JerseyCustomizer() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
       <div className="lg:sticky lg:top-8">
-        <JerseyScene3D kit={kit} name={name} number={number || 10} />
+        <JerseyPreview2D kit={kit} name={name} number={number} />
       </div>
 
       <CustomizationForm

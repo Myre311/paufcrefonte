@@ -153,7 +153,7 @@ export default function Hero({ featuredMatch = null, featuredArticle = null }) {
       role="region"
       aria-roledescription="carousel"
       aria-label="Carousel principal Pau FC"
-      className="relative min-h-[70vh] overflow-hidden bg-pau-night focus:outline-none"
+      className="relative min-h-[80vh] overflow-hidden bg-pau-night focus:outline-none"
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setIsPaused(true)}
@@ -197,7 +197,7 @@ export default function Hero({ featuredMatch = null, featuredArticle = null }) {
 
       {/* Dot indicators */}
       <div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3"
+        className="absolute bottom-[5.5rem] left-1/2 -translate-x-1/2 z-20 flex items-center gap-3"
         role="tablist"
         aria-label="Navigation du carousel"
       >
@@ -212,7 +212,6 @@ export default function Hero({ featuredMatch = null, featuredArticle = null }) {
             className="flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-pau-yellow focus-visible:outline-offset-2"
             style={{ minWidth: 44, minHeight: 44, background: 'transparent', borderRadius: 0 }}
           >
-            {/* Visual dot inset inside the 44px touch target */}
             <span
               className={[
                 'block w-2 h-2 transition-colors duration-300',
@@ -223,6 +222,30 @@ export default function Hero({ featuredMatch = null, featuredArticle = null }) {
             />
           </button>
         ))}
+      </div>
+
+      {/* Quick Access Rail */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 border-t border-white/10">
+        <div className="grid grid-cols-3 divide-x divide-white/10">
+          {[
+            { label: 'MATCH', sub: 'Prochain match', href: '/calendrier' },
+            { label: 'BOUTIQUE', sub: 'Collection 26/27', href: '/boutique' },
+            { label: 'BILLETTERIE', sub: 'Réserver mes places', href: '/billetterie' },
+          ].map(({ label, sub, href }) => (
+            <a
+              key={label}
+              href={href}
+              className="group flex flex-col items-center justify-center gap-0.5 py-4 bg-pau-night/70 backdrop-blur-sm hover:bg-pau-yellow/10 transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-pau-yellow"
+            >
+              <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-yellow group-hover:text-pau-white transition-colors duration-200">
+                {label}
+              </span>
+              <span className="hidden md:block text-[11px] font-sans text-white/50 group-hover:text-white/80 transition-colors duration-200">
+                {sub}
+              </span>
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   );

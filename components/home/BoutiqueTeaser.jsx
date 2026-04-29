@@ -7,50 +7,50 @@ export default function BoutiqueTeaser() {
     <section className="border-t border-pau-night/10" aria-label="Boutique officielle">
       <Reveal>
       <div className="grid grid-cols-1 md:grid-cols-2">
-        <div className="relative aspect-square md:aspect-auto md:min-h-[500px] overflow-hidden bg-pau-primary">
+        <div className="relative aspect-square md:aspect-auto md:min-h-[600px] overflow-hidden bg-pau-primary group">
           <Image
             src="/images/homepage/maillot-ext-dom.jpg"
             alt="Maillots saison 26/27"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           />
-          <div className="absolute inset-0 bg-pau-night/40" aria-hidden="true" />
-          <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12">
-            <p className="text-xs font-sans uppercase tracking-[0.2em] text-white/60 mb-2">
+          <div className="absolute inset-0 bg-pau-night/50" aria-hidden="true" />
+          <div className="absolute bottom-10 left-10 md:bottom-14 md:left-14">
+            <p className="text-xs font-sans uppercase tracking-[0.25em] text-white/60 mb-3">
               MAILLOTS 26/27
             </p>
-            <h2 className="font-display uppercase text-2xl md:text-3xl text-pau-white leading-tight mb-3">
+            <h2 className="font-display uppercase text-4xl md:text-6xl text-pau-white leading-none mb-5">
               COLLECTION OFFICIELLE
             </h2>
             <Link
               href="/boutique?cat=maillots"
-              className="text-sm font-sans uppercase tracking-wider text-pau-yellow underline hover:text-white transition-colors duration-200"
+              className="inline-block text-sm font-sans uppercase tracking-wider text-pau-yellow border-b border-pau-yellow/40 hover:border-pau-yellow pb-0.5 transition-colors duration-200"
             >
               VOIR LA COLLECTION →
             </Link>
           </div>
         </div>
 
-        <div className="relative aspect-square md:aspect-auto md:min-h-[500px] overflow-hidden bg-pau-primary">
+        <div className="relative aspect-square md:aspect-auto md:min-h-[600px] overflow-hidden bg-pau-primary group">
           <Image
             src="/images/homepage/Boutique.png"
             alt="Personnalise ton maillot"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           />
-          <div className="absolute inset-0 bg-pau-night/40" aria-hidden="true" />
-          <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12">
-            <p className="text-xs font-sans uppercase tracking-[0.2em] text-white/60 mb-2">
+          <div className="absolute inset-0 bg-pau-night/50" aria-hidden="true" />
+          <div className="absolute bottom-10 left-10 md:bottom-14 md:left-14">
+            <p className="text-xs font-sans uppercase tracking-[0.25em] text-white/60 mb-3">
               PERSONNALISE TON MAILLOT
             </p>
-            <h2 className="font-display uppercase text-2xl md:text-3xl text-pau-white leading-tight mb-3">
-              TON NOM. TON NUMÉRO.
+            <h2 className="font-display uppercase text-4xl md:text-6xl text-pau-white leading-none mb-5">
+              TON NOM.<br />TON NUMÉRO.
             </h2>
             <Link
               href="/boutique/personnalisation"
-              className="text-sm font-sans uppercase tracking-wider text-pau-yellow underline hover:text-white transition-colors duration-200"
+              className="inline-block text-sm font-sans uppercase tracking-wider text-pau-yellow border-b border-pau-yellow/40 hover:border-pau-yellow pb-0.5 transition-colors duration-200"
             >
               PERSONNALISER →
             </Link>

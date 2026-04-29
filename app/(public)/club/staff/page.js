@@ -7,9 +7,21 @@ export const metadata = {
 };
 
 const DIRECTION_STATIC = [
-  { nom: 'Prénom Nom', role: 'Président' },
-  { nom: 'Prénom Nom', role: 'Directeur Sportif' },
-  { nom: 'Prénom Nom', role: 'Directeur Général' },
+  {
+    nom: 'Bernard Laporte-Fray',
+    role: 'Président',
+    photo: '/images/staff/bernard-laporte-fray.png',
+  },
+  {
+    nom: 'Luis De Sousa',
+    role: 'Directeur Sportif',
+    photo: '/images/staff/luis-de-sousa.png',
+  },
+  {
+    nom: 'Thierry Debès',
+    role: 'Entraîneur Principal',
+    photo: '/images/staff/thierry-debes.png',
+  },
 ];
 
 function StaffCard({ person }) {
@@ -39,10 +51,34 @@ function StaffCard({ person }) {
   );
 }
 
-function StaticCard({ nom, role }) {
+function StaticCard({ nom, role, photo }) {
   return (
-    <div className="flex flex-col">
-      <div className="aspect-[3/4] bg-pau-primary mb-4" aria-hidden="true" />
+    <div className="flex flex-col group">
+      <div className="relative aspect-[3/4] overflow-hidden bg-pau-primary mb-4">
+        {photo ? (
+          <Image
+            src={photo}
+            alt={`${nom}, ${role}`}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover object-[center_25%] transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-pau-primary flex items-center justify-center">
+            <span className="font-display text-3xl text-white/15">
+              {nom?.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+            </span>
+          </div>
+        )}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(4,9,29,0.55) 0%, rgba(4,9,29,0.05) 50%, rgba(4,9,29,0) 100%)',
+          }}
+          aria-hidden="true"
+        />
+      </div>
       <p className="font-sans font-semibold text-sm uppercase tracking-wider text-pau-night">
         {nom}
       </p>
@@ -67,7 +103,7 @@ export default async function StaffPage() {
           alt=""
           fill
           priority
-          className="object-cover"
+          className="object-cover object-[center_30%]"
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-pau-night/55" aria-hidden="true" />
@@ -85,8 +121,8 @@ export default async function StaffPage() {
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <h2 className="font-display text-2xl uppercase text-pau-night mb-8">DIRECTION</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
-            {DIRECTION_STATIC.map(({ nom, role }) => (
-              <StaticCard key={role} nom={nom} role={role} />
+            {DIRECTION_STATIC.map(({ nom, role, photo }) => (
+              <StaticCard key={role} nom={nom} role={role} photo={photo} />
             ))}
           </div>
         </div>
@@ -106,12 +142,12 @@ export default async function StaffPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8">
               {[
-                { nom: 'Prénom Nom', role: 'Entraîneur principal' },
-                { nom: 'Prénom Nom', role: 'Entraîneur adjoint' },
-                { nom: 'Prénom Nom', role: 'Préparateur physique' },
-                { nom: 'Prénom Nom', role: 'Médecin du club' },
-              ].map(({ nom, role }) => (
-                <StaticCard key={role} nom={nom} role={role} />
+                { nom: 'Thierry Debès', role: 'Entraîneur principal', photo: '/images/staff/thierry-debes.png' },
+                { nom: 'Adjoint sportif', role: 'Entraîneur adjoint', photo: '/images/hero-academy.jpg' },
+                { nom: 'Préparation physique', role: 'Préparateur physique', photo: '/images/hero-academy-stages.jpg' },
+                { nom: 'Cellule médicale', role: 'Service médical', photo: '/images/hero-club.jpg' },
+              ].map(({ nom, role, photo }) => (
+                <StaticCard key={role} nom={nom} role={role} photo={photo} />
               ))}
             </div>
           )}

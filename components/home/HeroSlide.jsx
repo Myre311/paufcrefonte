@@ -9,7 +9,7 @@ export default function HeroSlide({ background, video, eyebrow, title, subtitle,
       aria-label={`Slide ${index + 1} sur 3`}
       aria-hidden={!active}
       className={[
-        'absolute inset-0 flex flex-col justify-end pb-16 md:pb-24',
+        'absolute inset-0 flex flex-col justify-end pb-32 md:pb-40',
         'transition-opacity duration-700 ease-out',
         active ? 'opacity-100 z-10' : 'opacity-0 z-0',
       ].join(' ')}
@@ -92,8 +92,8 @@ export default function HeroSlide({ background, video, eyebrow, title, subtitle,
         )}
 
         <h1
-          className="font-display uppercase text-pau-white leading-[0.88]"
-          style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}
+          className="font-display uppercase text-pau-white"
+          style={{ fontSize: 'clamp(2.5rem, 6.5vw, 5.5rem)', letterSpacing: '-0.02em', lineHeight: '0.85' }}
         >
           {title}
         </h1>
@@ -105,7 +105,7 @@ export default function HeroSlide({ background, video, eyebrow, title, subtitle,
         )}
 
         {ctas && ctas.length > 0 && (
-          <div className="flex flex-col sm:flex-row items-start gap-3 mt-8">
+          <div className="relative z-20 flex flex-col sm:flex-row items-start gap-3 mt-8">
             {ctas.map((cta) => (
               <Link
                 key={cta.href}

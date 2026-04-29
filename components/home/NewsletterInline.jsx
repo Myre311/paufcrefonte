@@ -28,7 +28,7 @@ export default function NewsletterInline() {
 
   return (
     <section
-      className="py-12 md:py-20 bg-pau-white text-center"
+      className="py-20 md:py-28 bg-pau-white text-center border-t border-pau-night/10"
       aria-label="Inscription newsletter"
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8">

@@ -19,14 +19,14 @@ export default async function PartnersTiers() {
 
   return (
     <section
-      className="border-t border-white/10 py-12 md:py-20 bg-pau-night"
+      className="border-t border-white/10 py-20 md:py-28 bg-pau-night"
       aria-label="Partenaires du Pau FC"
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <p className="text-xs font-sans uppercase tracking-[0.2em] text-pau-gold mb-3">
+        <p className="text-[11px] font-sans uppercase tracking-widest text-pau-gold/70 mb-4">
           NOS PARTENAIRES
         </p>
-        <h2 className="font-display uppercase text-3xl md:text-4xl text-pau-gold leading-tight mb-8">
+        <h2 className="font-display uppercase text-3xl md:text-5xl text-pau-gold leading-tight mb-10">
           ILS SOUTIENNENT LE CLUB
         </h2>
 
@@ -57,7 +57,7 @@ export default async function PartnersTiers() {
             <p className="text-xs font-sans uppercase tracking-[0.3em] text-white/40 mb-8">
               PARTENAIRES OFFICIELS
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8">
               {officiel.map((p) => (
                 <PartnerCard
                   key={p.id}
@@ -78,7 +78,7 @@ export default async function PartnersTiers() {
             <p className="text-xs font-sans uppercase tracking-[0.3em] text-white/40 mb-8">
               FOURNISSEURS &amp; PARTENAIRES LOCAUX
             </p>
-            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
               {local.map((p) => (
                 <PartnerCard
                   key={p.id}

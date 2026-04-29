@@ -64,7 +64,7 @@ export default function AcademiePage() {
           alt=""
           fill
           priority
-          className="object-cover"
+          className="object-cover object-[center_30%]"
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-pau-night/55" aria-hidden="true" />
@@ -117,11 +117,15 @@ export default function AcademiePage() {
                 et en National, preuve que la méthode Pau FC porte ses fruits.
               </p>
             </div>
-            <div
-              className="aspect-[4/3] bg-pau-primary"
-              role="img"
-              aria-label="Centre de formation Pau FC"
-            />
+            <div className="relative aspect-[4/3] overflow-hidden bg-pau-primary">
+              <Image
+                src="/images/hero-academy-stages.jpg"
+                alt="Centre de formation Pau FC"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-[center_30%]"
+              />
+            </div>
           </div>
         </div>
       </section>

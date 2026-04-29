@@ -32,7 +32,7 @@ export default async function GaleriePage() {
           alt=""
           fill
           priority
-          className="object-cover"
+          className="object-cover object-[center_30%]"
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-pau-night/55" aria-hidden="true" />

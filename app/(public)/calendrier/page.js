@@ -38,7 +38,7 @@ export default async function CalendrierPage() {
           alt="Calendrier Pau FC saison 2026-27"
           fill
           priority
-          className="object-cover"
+          className="object-cover object-[center_30%]"
         />
         <div className="absolute inset-0 bg-pau-night/60" aria-hidden="true" />
         <div className="relative mx-auto max-w-7xl px-4 md:px-8 py-16 w-full">

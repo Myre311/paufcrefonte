@@ -86,7 +86,7 @@ export default function MatchFeatured({ match }) {
     : { name: 'PAU FC', logo: '/images/homepage/Logo-Pau-FC-2023.png' };
 
   return (
-    <section className="border-t border-pau-night/10 py-12 md:py-20 bg-pau-white" aria-label="Prochain match">
+    <section className="border-t border-pau-night/10 py-20 md:py-28 bg-pau-white" aria-label="Prochain match">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <Reveal>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
@@ -141,41 +141,50 @@ export default function MatchFeatured({ match }) {
           </div>
 
           {countdown && (
-            <div className="flex items-center justify-center gap-6 md:gap-10 mt-8">
-              <div className="flex flex-col items-center">
-                <span className="font-display tabular-nums text-4xl md:text-5xl text-pau-night leading-none">
-                  {pad(countdown.days)}
-                </span>
-                <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
-                  Jours
-                </span>
+            <div className="mt-10">
+              <div className="flex items-center gap-3 justify-center mb-6">
+                <span className="block h-px w-12 bg-pau-night/15" aria-hidden="true" />
+                <p className="text-[11px] font-sans uppercase tracking-[0.25em] text-pau-night/50">
+                  PROCHAIN COUP D&apos;ENVOI &middot; J-{countdown.days}
+                </p>
+                <span className="block h-px w-12 bg-pau-night/15" aria-hidden="true" />
               </div>
-              <span className="font-display text-3xl text-pau-night/20 leading-none">:</span>
-              <div className="flex flex-col items-center">
-                <span className="font-display tabular-nums text-4xl md:text-5xl text-pau-night leading-none">
-                  {pad(countdown.hours)}
-                </span>
-                <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
-                  Heures
-                </span>
-              </div>
-              <span className="font-display text-3xl text-pau-night/20 leading-none">:</span>
-              <div className="flex flex-col items-center">
-                <span className="font-display tabular-nums text-4xl md:text-5xl text-pau-night leading-none">
-                  {pad(countdown.minutes)}
-                </span>
-                <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
-                  Minutes
-                </span>
-              </div>
-              <span className="font-display text-3xl text-pau-night/20 leading-none">:</span>
-              <div className="flex flex-col items-center">
-                <span className="font-display tabular-nums text-4xl md:text-5xl text-pau-yellow leading-none">
-                  {pad(countdown.seconds)}
-                </span>
-                <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
-                  Secondes
-                </span>
+              <div className="flex items-center justify-center gap-6 md:gap-12">
+                <div className="flex flex-col items-center">
+                  <span className="font-display tabular-nums text-6xl md:text-7xl text-pau-night leading-none">
+                    {pad(countdown.days)}
+                  </span>
+                  <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
+                    Jours
+                  </span>
+                </div>
+                <span className="font-display text-4xl md:text-5xl text-pau-night/20 leading-none pb-5">:</span>
+                <div className="flex flex-col items-center">
+                  <span className="font-display tabular-nums text-6xl md:text-7xl text-pau-night leading-none">
+                    {pad(countdown.hours)}
+                  </span>
+                  <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
+                    Heures
+                  </span>
+                </div>
+                <span className="font-display text-4xl md:text-5xl text-pau-night/20 leading-none pb-5">:</span>
+                <div className="flex flex-col items-center">
+                  <span className="font-display tabular-nums text-6xl md:text-7xl text-pau-night leading-none">
+                    {pad(countdown.minutes)}
+                  </span>
+                  <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
+                    Minutes
+                  </span>
+                </div>
+                <span className="font-display text-4xl md:text-5xl text-pau-night/20 leading-none pb-5">:</span>
+                <div className="flex flex-col items-center">
+                  <span className="font-display tabular-nums text-6xl md:text-7xl text-pau-yellow leading-none">
+                    {pad(countdown.seconds)}
+                  </span>
+                  <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
+                    Secondes
+                  </span>
+                </div>
               </div>
             </div>
           )}

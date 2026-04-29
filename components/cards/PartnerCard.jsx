@@ -10,7 +10,7 @@ export default function PartnerCard({ name, logoUrl, websiteUrl, size = 'md' }) 
 
   const card = (
     <div
-      className={`group aspect-[3/2] bg-pau-night border border-pau-gold/20 ${paddingClass} flex items-center justify-center hover:border-pau-gold/60 transition-colors duration-200`}
+      className={`group aspect-[3/2] bg-pau-white border border-pau-gold/30 ${paddingClass} flex items-center justify-center hover:border-pau-gold transition-colors duration-200`}
     >
       {logoUrl ? (
         <Image

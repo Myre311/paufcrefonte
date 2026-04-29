@@ -10,7 +10,7 @@ const STATS = [
 export default function BilletterieTeaser() {
   return (
     <section
-      className="py-12 md:py-20 bg-pau-white"
+      className="py-20 md:py-28 bg-pau-white border-t border-pau-night/10"
       aria-label="Billetterie"
     >
       <Reveal>
@@ -19,7 +19,7 @@ export default function BilletterieTeaser() {
           <p className="text-xs font-sans uppercase tracking-[0.2em] text-pau-night/50 mb-4">
             BILLETTERIE OFFICIELLE
           </p>
-          <h2 className="font-display uppercase text-3xl md:text-4xl text-pau-night leading-tight mb-4">
+          <h2 className="font-display uppercase text-4xl md:text-6xl text-pau-night leading-none mb-5">
             ABONNEMENTS SAISON 26–27
           </h2>
           <p className="text-base font-sans text-pau-night/70 leading-relaxed max-w-md mb-6">
@@ -45,7 +45,7 @@ export default function BilletterieTeaser() {
         <div className="flex flex-col divide-y divide-pau-night/10">
           {STATS.map(({ value, label }) => (
             <div key={label} className="py-8 first:pt-0 last:pb-0">
-              <p className="font-display tabular-nums text-4xl md:text-5xl text-pau-yellow leading-none mb-2">
+              <p className="font-display tabular-nums text-5xl md:text-7xl text-pau-yellow leading-none mb-2">
                 {value}
               </p>
               <p className="text-sm font-sans uppercase tracking-widest text-pau-night/60">
