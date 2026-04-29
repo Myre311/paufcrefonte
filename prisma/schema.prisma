@@ -1,0 +1,770 @@
+// =====================================================================
+// FC Pau — Schéma Prisma
+//
+// Source de vérité unique : la base Postgres (Supabase).
+// - DATABASE_URL : pooler (port 6543) — runtime app
+// - DIRECT_URL  : connexion directe (port 5432) — uniquement migrations
+//
+// Conventions :
+// - id        : cuid() (lisible, triable, pas de collision)
+// - slug      : indexé, unique sur les entités exposées en URL publique
+// - createdAt : @default(now())
+// - updatedAt : @updatedAt
+// - prix      : stockés en centimes (Int) — jamais en Float
+// =====================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// =====================================================================
+// CATALOGUE
+// =====================================================================
+
+enum ProductStatus {
+  draft
+  active
+  archived
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  slug     String    @unique
+  name     String
+  position Int       @default(0)
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([position])
+}
+
+model Product {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  name         String
+  description  String?       @db.Text
+  // Prix de référence (centimes EUR). Les variantes peuvent surcharger.
+  basePrice    Int
+  status       ProductStatus @default(draft)
+  // Mise en avant homepage / collections
+  featured     Boolean       @default(false)
+  // Configurateur de flocage activable
+  customizable Boolean       @default(false)
+  // Galerie : URLs Supabase Storage, ordre conservé
+  images       String[]      @default([])
+  // Métadonnées libres (matériau, équipementier, saison…)
+  meta         Json?
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  variants  ProductVariant[]
+  favorites Favorite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([featured])
+  @@index([categoryId])
+  @@index([createdAt])
+}
+
+// Coup de cœur utilisateur — un seul par couple (user, product).
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // SKU = identifiant unique partagé avec le POS physique
+  sku           String  @unique
+  // Taille / coloris / option — null si produit sans variante
+  size          String?
+  color         String?
+  // Surcharge de prix optionnelle (centimes EUR). null = utilise basePrice.
+  priceOverride Int?
+
+  stockItem    StockItem?
+  orderItems   OrderItem[]
+  movements    StockMovement[]
+  reservations CartReservation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+}
+
+// =====================================================================
+// STOCK UNIFIÉ (POS + en ligne)
+// Une seule source de vérité : StockMovement (journal append-only).
+// StockItem = projection rapide (cache calculé) pour lecture.
+// =====================================================================
+
+model StockItem {
+  id        String         @id @default(cuid())
+  variantId String         @unique
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  // Stock physique réellement présent (caisse + entrepôt)
+  onHand   Int @default(0)
+  // Réservé par paniers actifs (TTL)
+  reserved Int @default(0)
+  // Seuil d'alerte rupture
+  lowStock Int @default(3)
+
+  updatedAt DateTime @updatedAt
+
+  @@index([onHand])
+}
+
+enum StockMovementType {
+  restock // entrée fournisseur
+  sale_online // vente e-commerce
+  sale_pos // vente caisse physique
+  return_online // retour client e-commerce
+  return_pos // retour client caisse
+  adjustment // correction manuelle inventaire
+  reservation // réservation panier (négatif)
+  release // libération réservation panier (positif)
+}
+
+model StockMovement {
+  id        String         @id @default(cuid())
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  type      StockMovementType
+  // Quantité signée : entrée +, sortie -
+  quantity  Int
+  // Source externe (POS terminal id, order id, admin user id…)
+  source    String?
+  sourceRef String?
+  note      String?
+
+  occurredAt DateTime @default(now())
+
+  @@index([variantId, occurredAt])
+  @@index([type])
+  @@index([occurredAt])
+}
+
+// Réservation temporaire de stock liée à un panier actif (TTL 15 min).
+// Cron de cleanup décrémente reserved sur StockItem et purge les expirées.
+model CartReservation {
+  id        String         @id @default(cuid())
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  // Identifiant de session côté client (signé) — pas obligatoirement un User
+  sessionId String
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  quantity  Int
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([expiresAt])
+  @@index([variantId])
+}
+
+// =====================================================================
+// COMMANDES & PAIEMENT
+// =====================================================================
+
+enum OrderStatus {
+  pending // panier validé, paiement non confirmé
+  paid // Stripe webhook OK
+  preparing // en préparation entrepôt
+  shipped // expédiée
+  delivered // livrée (tracking final)
+  cancelled // annulée avant expédition
+  refunded // remboursée
+}
+
+model Order {
+  id     String @id @default(cuid())
+  // Numéro lisible affiché au client (ex: PAU-2026-000123)
+  number String @unique
+
+  userId     String?
+  user       User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  // Email pour les commandes invité (sans compte)
+  guestEmail String?
+
+  status OrderStatus @default(pending)
+
+  // Totaux figés au moment de la commande (centimes EUR)
+  subtotal      Int
+  shippingCost  Int @default(0)
+  discountTotal Int @default(0)
+  taxTotal      Int @default(0)
+  total         Int
+
+  currency String @default("EUR")
+
+  // Adresses snapshotées en JSON (pas normalisées : on veut figer l'historique)
+  shippingAddress Json?
+  billingAddress  Json?
+
+  // Stripe
+  stripeSessionId       String? @unique
+  stripePaymentIntentId String? @unique
+
+  // Coupon appliqué (snapshot, pas FK : on garde même si supprimé)
+  couponCode String?
+
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Restrict)
+
+  // Snapshot au moment de la commande
+  productName  String
+  variantLabel String? // "Taille L · Domicile"
+  unitPrice    Int // centimes EUR
+  quantity     Int
+
+  customizationId String?              @unique
+  customization   JerseyCustomization? @relation(fields: [customizationId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([variantId])
+}
+
+// =====================================================================
+// CONFIGURATEUR MAILLOT
+// =====================================================================
+
+model JerseyCustomization {
+  id     String  @id @default(cuid())
+  // Sauvegarde possible côté compte avant achat
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Variante de maillot ciblée (taille, version domicile/extérieur…)
+  variantId String?
+
+  // Flocage
+  name   String?
+  number Int?
+  font   String  @default("club") // "club" | "stadium" | "vintage"
+
+  // URL preview PNG générée côté serveur (Supabase Storage)
+  previewUrl String?
+
+  orderItem OrderItem?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// =====================================================================
+// UTILISATEURS & RÔLES
+// =====================================================================
+
+enum UserRole {
+  customer
+  staff_pos
+  staff_marketing
+  admin
+}
+
+model User {
+  id         String  @id @default(cuid())
+  // Lien avec auth.users (Supabase) — uuid string
+  authUserId String? @unique
+  email      String  @unique
+  firstName  String?
+  lastName   String?
+  phone      String?
+
+  role UserRole @default(customer)
+
+  // Stripe
+  stripeCustomerId String? @unique
+
+  newsletterOptIn Boolean @default(false)
+
+  orders                 Order[]
+  customizations         JerseyCustomization[]
+  cartReservations       CartReservation[]
+  newsletterSubscription NewsletterSubscriber?
+  addresses              Address[]
+  favorites              Favorite[]
+  comments               Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([createdAt])
+}
+
+enum AddressType {
+  shipping
+  billing
+}
+
+model Address {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type       AddressType @default(shipping)
+  // Libellé libre pour aider l'utilisateur ("Maison", "Bureau"…)
+  label      String?
+  firstName  String
+  lastName   String
+  line1      String
+  line2      String?
+  postalCode String
+  city       String
+  // Code ISO 3166-1 alpha-2
+  country    String      @default("FR")
+  phone      String?
+  // Une seule adresse par défaut par type et par user (logique applicative)
+  isDefault  Boolean     @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, type])
+}
+
+// =====================================================================
+// NEWSLETTER
+// =====================================================================
+
+enum NewsletterSegment {
+  matchday
+  shop
+  partners
+  all
+}
+
+model NewsletterSubscriber {
+  id    String @id @default(cuid())
+  email String @unique
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  segments       NewsletterSegment[] @default([all])
+  // Double opt-in RGPD
+  confirmedAt    DateTime?
+  unsubscribedAt DateTime?
+  source         String? // "footer" | "modal" | "checkout"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([confirmedAt])
+}
+
+// =====================================================================
+// PARTENAIRES (charte dorée #CBA74D — exclusif à cet espace)
+// =====================================================================
+
+enum PartnerTier {
+  premium
+  officiel
+  local
+}
+
+model Partner {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  tier        PartnerTier
+  // Logo SVG monochrome — URL Supabase Storage
+  logoUrl     String
+  websiteUrl  String?
+  description String?     @db.Text
+  position    Int         @default(0)
+  active      Boolean     @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tier, position])
+  @@index([active])
+}
+
+// =====================================================================
+// CODES PROMO
+// =====================================================================
+
+enum CouponType {
+  percent // valeur en %
+  fixed // valeur en centimes EUR
+}
+
+model Coupon {
+  id          String     @id @default(cuid())
+  code        String     @unique
+  type        CouponType
+  // Si percent : 10 = 10%. Si fixed : 1000 = 10€.
+  value       Int
+  // Montant minimum panier (centimes) avant application
+  minSubtotal Int?
+  // Bornes de validité
+  startsAt    DateTime?
+  endsAt      DateTime?
+  // Utilisations max globales / par utilisateur
+  maxUses     Int?
+  maxPerUser  Int?
+  usesCount   Int        @default(0)
+  active      Boolean    @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active])
+  @@index([endsAt])
+}
+
+// =====================================================================
+// VITRINE — Effectif, Calendrier, Actualités
+// =====================================================================
+
+enum PersonRole {
+  player
+  staff
+  coach
+}
+
+enum PlayerPosition {
+  goalkeeper
+  defender
+  midfielder
+  forward
+}
+
+model Player {
+  id           String          @id @default(cuid())
+  slug         String          @unique
+  firstName    String
+  lastName     String
+  shirtNumber  Int?
+  position     PlayerPosition?
+  role         PersonRole      @default(player)
+  // Code ISO 3166-1 alpha-2 ('FR', 'SN', ...)
+  nationality  String?
+  birthDate    DateTime?
+  heightCm     Int?
+  joinedAt     DateTime?
+  // URL Supabase Storage
+  photoUrl     String?
+  bio          String?         @db.Text
+  active       Boolean         @default(true)
+  displayOrder Int             @default(0)
+  // Titre poste pour le staff (« Entraîneur principal », « Préparateur physique »…)
+  staffTitle   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stats PlayerStats?
+
+  @@index([role, position, displayOrder])
+  @@index([active])
+}
+
+// Stats saison joueur
+model PlayerStats {
+  id       String @id @default(cuid())
+  playerId String @unique
+  player   Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  // Saison concernée
+  season String @default("2025-2026")
+
+  // Stats offensives
+  goals          Int @default(0)
+  assists        Int @default(0)
+  shotsOnTarget  Int @default(0)
+  shotsTotal     Int @default(0)
+
+  // Stats défensives
+  tackles        Int @default(0)
+  interceptions  Int @default(0)
+  clearances     Int @default(0)
+
+  // Discipline
+  yellowCards Int @default(0)
+  redCards    Int @default(0)
+
+  // Temps de jeu
+  matchesPlayed  Int @default(0)
+  matchesStarted Int @default(0)
+  minutesPlayed  Int @default(0)
+
+  // Gardien (si applicable)
+  saves       Int @default(0)
+  cleanSheets Int @default(0)
+  goalsConceded Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([season])
+}
+
+enum MatchStatus {
+  scheduled
+  live
+  played
+  cancelled
+  postponed
+}
+
+model Match {
+  id           String      @id @default(cuid())
+  // Compétition lisible (« Ligue 2 BKT », « Coupe de France »)
+  competition  String
+  season       String // "2025-2026"
+  kickoffAt    DateTime
+  // true = Pau joue à domicile (Nouste Camp)
+  isHome       Boolean
+  opponent     String
+  opponentLogo String?
+  venue        String      @default("Nouste Camp")
+  status       MatchStatus @default(scheduled)
+  // null tant que le match n'est pas joué
+  homeScore    Int?
+  awayScore    Int?
+  // Lien billetterie externe pour les matchs à domicile
+  ticketUrl    String?
+  broadcaster  String?
+  // Note libre admin (« huis clos », « fan day »…)
+  note         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events MatchEvent[]
+
+  @@index([season, kickoffAt])
+  @@index([status])
+}
+
+// Événements match en direct (buts, cartons, etc.)
+enum MatchEventType {
+  goal
+  yellow_card
+  red_card
+  substitution
+  var
+  penalty
+  own_goal
+}
+
+model MatchEvent {
+  id      String         @id @default(cuid())
+  matchId String
+  match   Match          @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  type       MatchEventType
+  minute     Int // Minute du jeu (45, 90+3, etc.)
+  // Joueur principal concerné
+  playerId   String?
+  playerName String?
+  // Joueur secondaire (ex: passeur, remplaçant entrant/sortant)
+  player2Id   String?
+  player2Name String?
+  // Team: home ou away
+  team       String // "home" | "away"
+  // Description libre
+  description String?
+
+  createdAt DateTime @default(now())
+
+  @@index([matchId, minute])
+}
+
+enum ArticleCategory {
+  matchday
+  club
+  transfer
+  foundation
+  other
+}
+
+model Article {
+  id            String          @id @default(cuid())
+  slug          String          @unique
+  title         String
+  // Chapeau utilisé en liste + meta description fallback
+  excerpt       String          @db.Text
+  body          String          @db.Text
+  // URL Supabase Storage
+  coverImageUrl String?
+  author        String          @default("Rédaction Pau FC")
+  category      ArticleCategory @default(other)
+  publishedAt   DateTime?
+  featured      Boolean         @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comments Comment[]
+
+  @@index([publishedAt])
+  @@index([category, publishedAt])
+  @@index([featured])
+}
+
+// Commentaires articles
+model Comment {
+  id        String  @id @default(cuid())
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  userId   String?
+  user     User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  // Nom pour commentaires invités
+  guestName  String?
+  guestEmail String?
+
+  content   String   @db.Text
+  // Modération
+  approved  Boolean  @default(false)
+  // Réponses imbriquées
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([articleId, approved, createdAt])
+  @@index([parentId])
+}
+
+// =====================================================================
+// GALERIE PHOTOS
+// =====================================================================
+
+enum GalleryCategory {
+  matchday
+  training
+  event
+  stadium
+  other
+}
+
+model Gallery {
+  id          String          @id @default(cuid())
+  title       String
+  description String?         @db.Text
+  // URL image principale (Supabase Storage)
+  imageUrl    String
+  // URL thumbnail optimisée pour les grids
+  thumbnailUrl String?
+  category    GalleryCategory @default(other)
+  // Match lié si c'est une photo de match
+  matchId     String?
+  // Photographe crédité
+  photographer String?
+  // Ordre d'affichage dans la galerie
+  position    Int             @default(0)
+  featured    Boolean         @default(false)
+  active      Boolean         @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category, position])
+  @@index([featured])
+  @@index([active])
+  @@index([matchId])
+}
+
+// =====================================================================
+// VIDÉOS
+// =====================================================================
+
+enum VideoCategory {
+  match_highlights
+  interviews
+  training
+  behind_scenes
+  academy
+  other
+}
+
+model Video {
+  id          String        @id @default(cuid())
+  title       String
+  description String?       @db.Text
+  // URL YouTube/Vimeo ou video ID
+  videoUrl    String
+  // Pour YouTube: id video (ex: dQw4w9WgXcQ)
+  videoId     String?
+  // Provider: youtube, vimeo, direct
+  provider    String        @default("youtube")
+  // Thumbnail personnalisée ou auto YouTube
+  thumbnailUrl String?
+  category    VideoCategory @default(other)
+  // Durée en secondes
+  duration    Int?
+  // Nombre de vues (peut être sync avec YouTube API)
+  views       Int           @default(0)
+  // Match lié si c'est un highlight
+  matchId     String?
+  // Joueur vedette si c'est une interview
+  playerId    String?
+  featured    Boolean       @default(false)
+  published   Boolean       @default(false)
+  publishedAt DateTime?
+  position    Int           @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category, publishedAt])
+  @@index([featured])
+  @@index([published])
+  @@index([matchId])
+}
