@@ -57,7 +57,7 @@ export default async function PartenairesPage() {
         />
         <div className="absolute inset-0 bg-pau-night/55" aria-hidden="true" />
         <div className="relative mx-auto max-w-7xl px-4 md:px-8 pb-10 md:pb-14 w-full">
-          <p className="text-xs uppercase tracking-[0.2em] text-pau-yellow mb-3 font-sans">
+          <p className="text-xs uppercase tracking-[0.2em] text-pau-gold mb-3 font-sans">
             ILS NOUS SOUTIENNENT
           </p>
           <h1 className="font-display text-3xl md:text-5xl uppercase text-pau-white leading-none">
