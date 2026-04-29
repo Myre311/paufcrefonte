@@ -149,39 +149,39 @@ export default function MatchFeatured({ match }) {
                 </p>
                 <span className="block h-px w-12 bg-pau-night/15" aria-hidden="true" />
               </div>
-              <div className="flex items-center justify-center gap-6 md:gap-12">
-                <div className="flex flex-col items-center">
-                  <span className="font-display tabular-nums text-6xl md:text-7xl text-pau-night leading-none">
+              <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-12">
+                <div className="flex flex-col items-center min-w-0">
+                  <span className="font-display tabular-nums text-4xl sm:text-5xl md:text-7xl text-pau-night leading-none">
                     {pad(countdown.days)}
                   </span>
-                  <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
+                  <span className="text-[9px] sm:text-[10px] font-sans uppercase tracking-[0.2em] text-pau-night/40 mt-2">
                     Jours
                   </span>
                 </div>
-                <span className="font-display text-4xl md:text-5xl text-pau-night/20 leading-none pb-5">:</span>
-                <div className="flex flex-col items-center">
-                  <span className="font-display tabular-nums text-6xl md:text-7xl text-pau-night leading-none">
+                <span className="font-display text-2xl sm:text-3xl md:text-5xl text-pau-night/20 leading-none pb-4 md:pb-5">:</span>
+                <div className="flex flex-col items-center min-w-0">
+                  <span className="font-display tabular-nums text-4xl sm:text-5xl md:text-7xl text-pau-night leading-none">
                     {pad(countdown.hours)}
                   </span>
-                  <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
+                  <span className="text-[9px] sm:text-[10px] font-sans uppercase tracking-[0.2em] text-pau-night/40 mt-2">
                     Heures
                   </span>
                 </div>
-                <span className="font-display text-4xl md:text-5xl text-pau-night/20 leading-none pb-5">:</span>
-                <div className="flex flex-col items-center">
-                  <span className="font-display tabular-nums text-6xl md:text-7xl text-pau-night leading-none">
+                <span className="font-display text-2xl sm:text-3xl md:text-5xl text-pau-night/20 leading-none pb-4 md:pb-5">:</span>
+                <div className="flex flex-col items-center min-w-0">
+                  <span className="font-display tabular-nums text-4xl sm:text-5xl md:text-7xl text-pau-night leading-none">
                     {pad(countdown.minutes)}
                   </span>
-                  <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
+                  <span className="text-[9px] sm:text-[10px] font-sans uppercase tracking-[0.2em] text-pau-night/40 mt-2">
                     Minutes
                   </span>
                 </div>
-                <span className="font-display text-4xl md:text-5xl text-pau-night/20 leading-none pb-5">:</span>
-                <div className="flex flex-col items-center">
-                  <span className="font-display tabular-nums text-6xl md:text-7xl text-pau-yellow leading-none">
+                <span className="font-display text-2xl sm:text-3xl md:text-5xl text-pau-night/20 leading-none pb-4 md:pb-5">:</span>
+                <div className="flex flex-col items-center min-w-0">
+                  <span className="font-display tabular-nums text-4xl sm:text-5xl md:text-7xl text-pau-yellow leading-none">
                     {pad(countdown.seconds)}
                   </span>
-                  <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
+                  <span className="text-[9px] sm:text-[10px] font-sans uppercase tracking-[0.2em] text-pau-night/40 mt-2">
                     Secondes
                   </span>
                 </div>
