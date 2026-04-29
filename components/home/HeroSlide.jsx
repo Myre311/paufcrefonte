@@ -61,7 +61,7 @@ export default function HeroSlide({ background, video, eyebrow, title, subtitle,
           <div
             className={`flex items-center gap-4 mb-5 ${matchLogos.isHome === false ? 'flex-row-reverse justify-end' : 'flex-row'}`}
           >
-            <div className="w-12 h-12 md:w-14 md:h-14 relative shrink-0 bg-white/95 p-1 border border-white/20">
+            <div className="w-12 h-12 md:w-14 md:h-14 relative shrink-0">
               <Image
                 src="/images/homepage/Logo-Pau-FC-2023.png"
                 alt="Logo Pau FC"
@@ -71,7 +71,7 @@ export default function HeroSlide({ background, video, eyebrow, title, subtitle,
               />
             </div>
             <span className="font-display text-2xl md:text-3xl text-white/40">vs</span>
-            <div className="w-12 h-12 md:w-14 md:h-14 relative shrink-0 bg-white/95 p-1 border border-white/20">
+            <div className="w-12 h-12 md:w-14 md:h-14 relative shrink-0">
               {matchLogos.opponentLogo ? (
                 <Image
                   src={matchLogos.opponentLogo}
@@ -81,8 +81,8 @@ export default function HeroSlide({ background, video, eyebrow, title, subtitle,
                   sizes="56px"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-[10px] font-sans uppercase tracking-wider text-pau-night/70">
+                <div className="w-full h-full flex items-center justify-center border border-white/20">
+                  <span className="text-[10px] font-sans uppercase tracking-wider text-white/70">
                     {matchLogos.opponent?.slice(0, 3).toUpperCase()}
                   </span>
                 </div>

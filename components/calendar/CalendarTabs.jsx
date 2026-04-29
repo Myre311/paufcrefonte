@@ -97,7 +97,7 @@ export default function CalendarTabs({ matches }) {
                   <div className="flex items-center gap-3">
                     {/* Pau FC logo + name */}
                     <div className={`flex items-center gap-2 ${match.isHome === false ? 'order-last' : 'order-first'}`}>
-                      <div className="w-10 h-10 relative shrink-0 bg-white p-0.5">
+                      <div className="w-10 h-10 relative shrink-0">
                         <Image
                           src="/images/homepage/Logo-Pau-FC-2023.png"
                           alt="Logo Pau FC"
@@ -113,7 +113,7 @@ export default function CalendarTabs({ matches }) {
                     <span className="text-xs font-sans text-pau-night/40">vs</span>
                     {/* Opponent logo + name */}
                     <div className={`flex items-center gap-2 ${match.isHome === false ? 'order-first' : 'order-last'}`}>
-                      <div className="w-10 h-10 relative shrink-0 bg-white border border-pau-night/10 p-0.5">
+                      <div className="w-10 h-10 relative shrink-0">
                         {match.opponentLogo ? (
                           <Image
                             src={match.opponentLogo}

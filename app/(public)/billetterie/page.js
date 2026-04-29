@@ -120,7 +120,7 @@ export default async function BilletteriePage() {
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 relative shrink-0 bg-white border border-pau-night/10 p-0.5">
+                      <div className="w-9 h-9 relative shrink-0">
                         <Image
                           src="/images/homepage/Logo-Pau-FC-2023.png"
                           alt="Logo Pau FC"
@@ -133,7 +133,7 @@ export default async function BilletteriePage() {
                         PAU FC
                       </span>
                       <span className="text-pau-night/30 text-xs font-sans">vs</span>
-                      <div className="w-9 h-9 relative shrink-0 bg-white border border-pau-night/10 p-0.5">
+                      <div className="w-9 h-9 relative shrink-0">
                         {match.opponentLogo ? (
                           <Image
                             src={match.opponentLogo}
