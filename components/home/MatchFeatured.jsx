@@ -24,12 +24,13 @@ function formatTime(iso) {
 
 function computeCountdown(iso) {
   const diff = new Date(iso) - Date.now();
-  if (diff <= 0) return { days: 0, hours: 0, minutes: 0 };
-  const totalMinutes = Math.floor(diff / 60000);
-  const days = Math.floor(totalMinutes / 1440);
-  const hours = Math.floor((totalMinutes % 1440) / 60);
-  const minutes = totalMinutes % 60;
-  return { days, hours, minutes };
+  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return { days, hours, minutes, seconds };
 }
 
 function TeamBlock({ logoSrc, name, alignRight }) {
@@ -58,9 +59,10 @@ export default function MatchFeatured({ match }) {
 
   useEffect(() => {
     if (!match) return;
+    setCountdown(computeCountdown(match.kickoffAt));
     const interval = setInterval(() => {
       setCountdown(computeCountdown(match.kickoffAt));
-    }, 30000);
+    }, 1000);
     return () => clearInterval(interval);
   }, [match]);
 
@@ -139,7 +141,7 @@ export default function MatchFeatured({ match }) {
           </div>
 
           {countdown && (
-            <div className="flex items-center justify-center gap-8 md:gap-12 mt-8">
+            <div className="flex items-center justify-center gap-6 md:gap-10 mt-8">
               <div className="flex flex-col items-center">
                 <span className="font-display tabular-nums text-4xl md:text-5xl text-pau-night leading-none">
                   {pad(countdown.days)}
@@ -164,6 +166,15 @@ export default function MatchFeatured({ match }) {
                 </span>
                 <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
                   Minutes
+                </span>
+              </div>
+              <span className="font-display text-3xl text-pau-night/20 leading-none">:</span>
+              <div className="flex flex-col items-center">
+                <span className="font-display tabular-nums text-4xl md:text-5xl text-pau-yellow leading-none">
+                  {pad(countdown.seconds)}
+                </span>
+                <span className="text-[10px] font-sans uppercase tracking-[0.25em] text-pau-night/40 mt-2">
+                  Secondes
                 </span>
               </div>
             </div>

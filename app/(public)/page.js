@@ -5,6 +5,7 @@ import NewsListing from '@/components/home/NewsListing';
 import BoutiqueTeaser from '@/components/home/BoutiqueTeaser';
 import BilletterieTeaser from '@/components/home/BilletterieTeaser';
 import PartnersTiers from '@/components/home/PartnersTiers';
+import SocialBar from '@/components/home/SocialBar';
 import NewsletterInline from '@/components/home/NewsletterInline';
 
 export const dynamic = 'force-dynamic';
@@ -94,6 +95,7 @@ export default async function HomePage() {
       <BoutiqueTeaser />
       <BilletterieTeaser />
       <PartnersTiers />
+      <SocialBar />
       <NewsletterInline />
     </>
   );

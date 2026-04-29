@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import JerseyMesh from './JerseyMesh';
 import { useIsMobile } from '@/lib/use-is-mobile';
 
@@ -51,8 +51,7 @@ export default function JerseyScene3D({ kit, name, number }) {
           shadow-mapSize={[1024, 1024]}
         />
         <pointLight position={[-3, 1, 2]} intensity={0.6} />
-
-        <Environment preset="studio" />
+        <hemisphereLight args={['#ffffff', '#1A1D38', 0.4]} />
 
         <OrbitControls
           ref={controlsRef}

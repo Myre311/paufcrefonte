@@ -90,7 +90,7 @@ export default function ContactPage({ searchParams }) {
                 </p>
                 <nav aria-label="Réseaux sociaux Pau FC" className="flex flex-wrap items-center gap-2 text-sm text-pau-night/60">
                   <a
-                    href="https://instagram.com/paufc"
+                    href="https://instagram.com/paufootballclub"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:opacity-60 transition-opacity duration-200"

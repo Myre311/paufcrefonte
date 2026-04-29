@@ -122,7 +122,7 @@ export default function Footer() {
               />
             </Link>
             <nav aria-label="Réseaux sociaux" className="flex flex-wrap items-center gap-3 text-sm font-sans text-white/60">
-              <Link href="https://instagram.com/paufc" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-200 min-h-[44px] flex items-center">
+              <Link href="https://instagram.com/paufootballclub" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-200 min-h-[44px] flex items-center">
                 INSTAGRAM
               </Link>
               <span aria-hidden="true">·</span>
